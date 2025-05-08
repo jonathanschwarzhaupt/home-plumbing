@@ -1,13 +1,12 @@
 # Home Plumbing
 
 ## 1. Overview / Background
-**What problem are you solving?**
 
 Managing my personal finances through the Comdirect banking app has proven frustrating due to the lack of a detailed, customizable spending overview.I aim to solve that gap by independently extracting, integrating, and analyzing financial data to build a richer, tailored spending dashboard.
 
 Beyond solving a personal need, the project also serves as a playground to integrate multiple data sources, explore (emerging) technologies like Apache Airflow 3.0, Apache Iceberg and Project Nessie, and apply modern data engineering best practices such as the Write-Audit-Publish (WAP) pattern.
 
-Scope: This is a personal Proof of Concept (PoC) designed to validate the technical setup and workflows. The project may later evolve into a more polished, production-grade solution as features and robustness improve. 
+Scope: This is a personal Proof of Concept (PoC) designed to validate the technical setup and workflows. The project may later evolve into a more polished, "production-grade" solution as features and robustness improve.
 
 Goal: The goal is to have a Airflow installation running in my Kubernetes [homelab](https://github.com/jonathanschwarzhaupt/homelab).
 
