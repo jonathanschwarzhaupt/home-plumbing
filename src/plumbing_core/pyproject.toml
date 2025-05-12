@@ -1,0 +1,20 @@
+[project]
+name = "plumbing-core"
+version = "0.0.0"
+description = "My core code"
+readme = "README.md"
+authors = [
+    { name = "Jonathan Schwarzhaupt", email = "jonathan@gmail.com" }
+]
+
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "pendulum>=3.1.0",
+    "pydantic>=2.11.4",
+    "pydantic-settings>=2.9.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
