@@ -1,15 +1,15 @@
 import json
 from time import sleep
+from typing import Optional
 from httpx import Client
 
-from plumbing_core.sources.comdirect.helpers import get_client_request_id, make_client
 from .types import AccessToken, OAuthResponse, APIConfig
-from .helpers import get_request_url
+from .helpers import get_request_url, get_client_request_id, make_client
 
 
 def authenticate_user_credentials(
     cfg: APIConfig, session_id: str, wait_for_challenge_seconds: int = 20
-) -> AccessToken | None:
+) -> Optional[AccessToken]:
     """Completes the comdirect OAuth flow and returns an `AccessToken`."""
 
     http_client = make_client(cfg=cfg)
@@ -42,6 +42,28 @@ def authenticate_user_credentials(
         return _cd_secondary_flow(
             cfg=cfg, access_token=o_auth_response.access_token, http_client=http_client
         )
+    finally:
+        http_client.close()
+
+
+def refresh_token(cfg: APIConfig, token: AccessToken) -> Optional[AccessToken]:
+    """Refreshes an existing access token"""
+
+    http_client = make_client(cfg=cfg)
+    try:
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        data = {
+            "client_id": cfg.client_id,
+            "client_secret": cfg.client_secret,
+            "grant_type": "refresh_token",
+            "refresh_token": token.refresh_token,
+        }
+
+        url = get_request_url(cfg.base_url, "oauth/token")
+        response = http_client.post(url=url, data=data, headers=headers)
+        response.raise_for_status()
+        return AccessToken(**response.json())
+
     finally:
         http_client.close()
 
