@@ -5,16 +5,19 @@ With this repository, I aim to decouple the core logic from orchestrators and ot
 
 ## Features
 
-- Modular connectors under `plumbing_core.sources.<vendor>`
-- Typed data models
+- Modular source-connectors under `plumbing_core.sources.<vendor>` with typed data models
+- Project Nessie / Iceberg destination under `plumbing_core.destinations.nessie`: Coming soon
 - Utility helpers
+- Logging: Each module exposes `logger = logging.getLogger(__name__)` and ships with a built-in `NullHandler`
 
 ## Getting Started
 
 0. Prerequisite
+
 `uv` and `python 3.12` installed on your system
 
 1. Install
+
 Clone the repository and install the `plumbing_core` package locally, in editable mode:
 
 ```bash
@@ -38,6 +41,7 @@ from plumbing_core.sources.comdirect import (
 > Coming soon!
 
 4. Configuration
+
 Environment variables:
 
 - `COMDIRECT_CLIENT_ID`

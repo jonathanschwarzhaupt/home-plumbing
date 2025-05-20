@@ -1,3 +1,5 @@
+import logging
+
 from plumbing_core.sources.comdirect import (
     APIConfig,
     get_session_id,
@@ -7,6 +9,11 @@ from plumbing_core.sources.comdirect import (
 
 def main() -> None:
     """Test the full auth flow reading the config from a .env file"""
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
 
     cfg = APIConfig(_env_file=".env")
     session_id = get_session_id()

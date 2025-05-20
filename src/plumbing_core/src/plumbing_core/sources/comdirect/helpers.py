@@ -1,8 +1,12 @@
 import uuid
 import random
-from httpx import Client, URL
+import logging
+from httpx import URL, Client
 
 from .types import APIConfig
+
+
+logger = logging.getLogger(__name__)
 
 
 def get_session_id() -> str:
@@ -26,5 +30,7 @@ def make_client(cfg: APIConfig) -> Client:
     )
 
 
-def get_request_url(base_url: URL, endpoint: str) -> str:
-    return str(base_url) + endpoint
+def get_request_url(base_url: URL | str, endpoint: str) -> str:
+    url = str(base_url) + endpoint
+    logger.debug(f"Returning request url: '{url}'")
+    return url
