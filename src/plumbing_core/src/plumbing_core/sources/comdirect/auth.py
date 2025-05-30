@@ -35,7 +35,7 @@ def authenticate_user_credentials(
         )
 
         logger.info(
-            f"Waiting {wait_for_challenge_seconds} for the user to confirm their PhotoTan challenge"
+            f"Waiting {wait_for_challenge_seconds} seconds for the user to confirm their PhotoTan challenge"
         )
         sleep(wait_for_challenge_seconds)
 
