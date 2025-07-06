@@ -6,6 +6,7 @@ With this repository, I aim to decouple the core logic from orchestrators and ot
 ## Features
 
 - Modular source-connectors under `plumbing_core.sources.<vendor>` with typed data models
+- SQLite destination under `plumbing_core.destinations.sqlite` with DuckDB integration for analytics
 - Project Nessie / Iceberg destination under `plumbing_core.destinations.nessie`: Coming soon
 - Utility helpers
 - Logging: Each module exposes `logger = logging.getLogger(__name__)` and ships with a built-in `NullHandler`
@@ -32,13 +33,25 @@ uv pip install .
 ```python
 from plumbing_core.sources.comdirect import (
   APIConfig, 
-  authenticate_user_credentials
+  authenticate_user_credentials,
+  get_accounts_balances
+)
+from plumbing_core.destinations.sqlite import (
+  SQLiteConfig,
+  write_account_balances
 )
 ```
 
-3. Fetch data
+3. Extract and Load data
 
-> Coming soon!
+```python
+# Extract account balances
+balances = get_accounts_balances(cfg=config, bearer_access_token=token)
+
+# Load to SQLite
+db_config = SQLiteConfig(db_path=Path("comdirect.db"))
+write_account_balances(balances=balances, config=db_config)
+```
 
 4. Configuration
 
@@ -51,6 +64,9 @@ Environment variables:
 
 Use these to instantiate the `APIConfig`, or pass them explicitly.
 
+For SQLite destinations:
+- `SQLITE_DB_PATH` - Path to SQLite database file
+
 ## Code Structure
 
 ```
@@ -61,20 +77,41 @@ Use these to instantiate the `APIConfig`, or pass them explicitly.
 ├── src
 │   └── plumbing_core
 │       ├── __init__.py
-│       └── sources
+│       ├── sources
+│       │   ├── __init__.py
+│       │   └── comdirect
+│       │       ├── __init__.py
+│       │       ├── auth.py         <-- Comdirect auth flow logic
+│       │       ├── data.py         <-- Data extraction methods
+│       │       ├── helpers.py      <-- Supporting methods
+│       │       └── types.py        <-- Typed dataclasses and settings
+│       └── destinations
 │           ├── __init__.py
-│           └── comdirect
+│           └── sqlite
 │               ├── __init__.py
-│               ├── auth.py         <-- Comdirect auth flow logic
-│               ├── helpers.py      <-- Supporting methods
-│               └── types.py        <-- Typed dataclasses and settings
+│               ├── config.py       <-- SQLite configuration
+│               ├── connection.py   <-- DuckDB connection manager
+│               └── writers.py      <-- Data writers with upsert logic
 ├── examples                        <-- example scripts to try
-│   └── comdirect_auth.py
+│   ├── comdirect_auth.py
+│   └── comdirect_account_balances.py
 ```
 
 ## Examples
 
-- See `examples/comdirect_auth.py` for a complete authentication flow script.
+- See `examples/comdirect_auth.py` for a complete authentication flow script
+- See `examples/comdirect_account_balances.py` for end-to-end extract and load to SQLite
+
+## Architecture Notes
+
+### SQLite + DuckDB Integration
+
+The SQLite destination uses an interesting architectural pattern: **SQLite for storage, DuckDB for analytics**. 
+
+- **SQLite**: Single-file databases with no infrastructure overhead. Each source gets its own `.db` file with a single writer, eliminating concurrency issues
+- **DuckDB**: Acts as a bridge during analytics, allowing complex queries across multiple SQLite files and seamless integration with pandas/arrow ecosystems
+
+This pattern scales well for modestly-sized data platforms where you want the simplicity of file-based storage but the analytical power of modern columnar query engines. DuckDB can attach multiple SQLite databases and perform federated queries, making it perfect for this use case.
 
 ## Contributing
 
