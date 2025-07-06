@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 from plumbing_core.sources.comdirect import (
     AccountBalance,
@@ -7,6 +8,8 @@ from plumbing_core.sources.comdirect import (
     get_accounts_balances,
     get_session_id,
 )
+
+from plumbing_core.destinations.sqlite import SQLiteConfig, write_account_balances
 
 
 def main() -> None:
@@ -27,7 +30,12 @@ def main() -> None:
     account_balances: list[AccountBalance] = get_accounts_balances(
         cfg=cfg, bearer_access_token=access_token.bearer_access_token
     )
-    print(account_balances[0].model_dump())
+
+    logging.info("Loading to sqlite")
+    db_path = Path.cwd() / "comdirect.db"
+    db_config = SQLiteConfig(db_path=db_path)
+    record_count = write_account_balances(balances=account_balances, config=db_config)
+    logging.info(f"Loaded {record_count} records")
 
 
 if __name__ == "__main__":
