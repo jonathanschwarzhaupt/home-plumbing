@@ -1,12 +1,13 @@
-import pandas as pd
-import logging
-from typing import List
-import pendulum
 import duckdb
+import logging
+import pendulum
+import pandas as pd
+from typing import List
 
+
+from plumbing_core.sources.comdirect import AccountBalance, AccountTransaction
 from .config import SQLiteConfig
 from .connection import get_duckdb_connection
-from plumbing_core.sources.comdirect import AccountBalance
 
 logger = logging.getLogger(__name__)
 
@@ -79,6 +80,58 @@ def _delete_and_insert(
     return len(df)
 
 
+def _insert_if_not_exists(
+    conn: duckdb.DuckDBPyConnection,
+    df: pd.DataFrame,
+    table_name: str,
+    on_conflict_keys: List[str],
+) -> int:
+    """Inserts new records if not exists"""
+
+    inserted_row_count = len(df)
+
+    if not on_conflict_keys:
+        raise ValueError("'on_conflict_keys' is required.")
+
+    # Filter incoming data to only new data
+    where_condition = " AND ".join([f"t1.{key} = t2.{key}" for key in on_conflict_keys])
+    filter_df_sql = f"""
+        FROM df t1
+        WHERE NOT EXISTS (
+            SELECT 1 FROM
+            sqlite_db.{table_name} t2
+            WHERE {where_condition}
+        )
+    """
+    try:
+        df = conn.sql(filter_df_sql).df()
+        inserted_row_count = len(df)
+    except Exception as e:
+        logger.error(f"Exception filtering incoming data with error: {e}")
+        raise
+    if inserted_row_count == 0:
+        logger.info("No new data, returning")
+        return 0
+
+    # 'INSERT INTO SELECT *'
+    insert_sql = f"""
+        INSERT INTO sqlite_db.{table_name}
+        FROM df
+    """
+
+    logger.debug(f"Executing INSERT: {insert_sql}")
+    try:
+        conn.execute(insert_sql)
+    except Exception as e:
+        logger.error(
+            f"Exception insert where not exists for query: {insert_sql} with error: {e}"
+        )
+        raise
+    logger.info(f"Inserted {inserted_row_count} new records")
+
+    return inserted_row_count
+
+
 def write_account_balances(
     balances: List[AccountBalance],
     config: SQLiteConfig,
@@ -112,6 +165,52 @@ def write_account_balances(
 
             conn.execute("COMMIT")
             logger.info(f"Transaction committed: {inserted_count} records processesed")
+            return inserted_count
+
+        except Exception as e:
+            conn.execute("ROLLBACK")
+            logger.error(f"Transaction rolled back due to error: {e}")
+            raise
+
+
+def write_account_transactions_booked(
+    transactions: List[AccountTransaction],
+    account_id: str,
+    config: SQLiteConfig,
+    table_name: str = "account_transactions__booked",
+    delete_keys: List[str] = ["account_id", "reference"],
+) -> int:
+    """Write account transactions using transactional delete+insert"""
+
+    if not transactions:
+        logger.info("No transactions passed, returning")
+        return 0
+
+    df = pd.DataFrame([transaction.model_dump() for transaction in transactions])
+    df["account_id"] = account_id
+    df["_inserted_at_day"] = pendulum.now("CET").to_date_string()
+    df["_inserted_at_ts"] = pendulum.now("CET").to_datetime_string()
+
+    with get_duckdb_connection(config.db_path) as conn:
+        logger.info("Beginning transaction")
+        conn.execute("BEGIN TRANSACTION")
+
+        try:
+            table_created = _ensure_table_exists(
+                conn=conn, table_name=table_name, df=df
+            )
+            if table_created:
+                inserted_count = len(df)
+            else:
+                inserted_count = _insert_if_not_exists(
+                    conn=conn,
+                    df=df,
+                    table_name=table_name,
+                    on_conflict_keys=delete_keys,
+                )
+
+            conn.execute("COMMIT")
+            logger.info(f"Transaction commited: {inserted_count} records processesed")
             return inserted_count
 
         except Exception as e:
