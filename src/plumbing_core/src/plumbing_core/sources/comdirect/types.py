@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from datetime import date
 import pendulum
 from pendulum import DateTime
-from typing import Optional, Any
+from typing import Optional, Any, Dict
 from pydantic import BaseModel, model_validator, field_validator, AnyHttpUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -48,6 +48,21 @@ class AccessToken(OAuthResponse):
         Helps refresh the token early.
         """
         return pendulum.now("UTC") >= self.expires_at.subtract(seconds=buffer_seconds)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Converts the `AccessToken` to a python dictionary"""
+        expires_at_string = self.expires_at.to_datetime_string()
+        return {
+            "access_token": self.access_token,
+            "token_type": self.token_type,
+            "refresh_token": self.refresh_token,
+            "expires_in": self.expires_in,
+            "scope": self.scope,
+            "kdnr": self.kdnr,
+            "bpid": self.bpid,
+            "kontaktId": self.kontaktId,
+            "expires_at": expires_at_string,
+        }
 
 
 class APIConfig(BaseSettings):
