@@ -36,22 +36,29 @@ class OAuthResponse:
 
 @dataclass
 class AccessToken(OAuthResponse):
-    expires_at: DateTime = field(init=False)
+    expires_at: Optional[DateTime] = field(default=None)
 
     def __post_init__(self):
-        """Calculate the UTC expiry time once, up front"""
-        self.expires_at = pendulum.now("UTC").add(seconds=self.expires_in)
+        """Calculate the UTC expiry time once, up front if not already provided"""
+        if self.expires_at is None:
+            self.expires_at = pendulum.now("UTC").add(seconds=self.expires_in)
 
     def needs_refresh(self, buffer_seconds: int = 100) -> bool:
         """
         True if token is within `buffer_seconds` of expiry.
         Helps refresh the token early.
         """
-        return pendulum.now("UTC") >= self.expires_at.subtract(seconds=buffer_seconds)
+        expires_at = self.expires_at
+        if expires_at is None:
+            expires_at = pendulum.now("UTC").add(seconds=self.expires_in)
+        return pendulum.now("UTC") >= expires_at.subtract(seconds=buffer_seconds)
 
     def to_dict(self) -> Dict[str, Any]:
         """Converts the `AccessToken` to a python dictionary"""
-        expires_at_string = self.expires_at.to_datetime_string()
+        expires_at = self.expires_at
+        if expires_at is None:
+            expires_at = pendulum.now("UTC").add(seconds=self.expires_in)
+        expires_at_string = expires_at.to_datetime_string()
         return {
             "access_token": self.access_token,
             "token_type": self.token_type,
