@@ -43,7 +43,12 @@ class AccessToken(OAuthResponse):
         if self.expires_at is None:
             self.expires_at = pendulum.now("UTC").add(seconds=self.expires_in)
 
-    def needs_refresh(self, buffer_seconds: int = 100) -> bool:
+        if isinstance(self.expires_at, str):
+            self.expires_at: DateTime = pendulum.parse(
+                self.expires_at, tz="UTC", exact=True
+            )
+
+    def needs_refresh(self, buffer_seconds: int = 130) -> bool:
         """
         True if token is within `buffer_seconds` of expiry.
         Helps refresh the token early.
