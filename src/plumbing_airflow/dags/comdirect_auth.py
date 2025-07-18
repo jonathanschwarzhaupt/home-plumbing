@@ -1,22 +1,26 @@
 from airflow.sdk import dag, task, Variable
 from plumbing_core.sources.comdirect import (
     APIConfig,
+    AccessToken,
     get_session_id,
     authenticate_user_credentials,
 )
+from typing import Dict, Any
 from pendulum import datetime
 import logging
 
 
-@dag(start_date=datetime(2025, 4, 1), schedule=None, tags=["comdirect"])
+@dag(start_date=datetime(2025, 4, 1), schedule=None, tags=["comdirect", "auth"])
 def comdirect_auth():
     """Authenticate client against comdirect"""
 
     @task
-    def get_auth_token():
+    def get_auth_token() -> Dict[str, Any]:
         cfg = APIConfig()
         session_id = get_session_id()
-        access_token = authenticate_user_credentials(cfg=cfg, session_id=session_id)
+        access_token: AccessToken = authenticate_user_credentials(
+            cfg=cfg, session_id=session_id
+        )
         return access_token.to_dict()
 
     @task
