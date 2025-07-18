@@ -164,7 +164,7 @@ def write_account_balances(
                 )
 
             conn.execute("COMMIT")
-            logger.info(f"Transaction committed: {inserted_count} records processesed")
+            logger.info(f"Transaction committed: {inserted_count} records processesed")
             return inserted_count
 
         except Exception as e:

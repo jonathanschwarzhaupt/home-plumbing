@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+import pendulum
 from pendulum import Date
 
 from plumbing_core.sources.comdirect import (
@@ -14,6 +15,7 @@ from plumbing_core.sources.comdirect import (
 from plumbing_core.destinations.sqlite import (
     SQLiteConfig,
     write_account_transactions_booked,
+    get_max_date_string,
 )
 
 
@@ -37,23 +39,39 @@ def main() -> None:
     )
 
     for account in account_balances:
+        # Set default from when to fetch transactions
+        last_transaction_date = Date(2025, 6, 1)
         account_id = account.account_id
 
+        db_path = Path.cwd() / "comdirect.db"
+        db_config = SQLiteConfig(db_path=db_path)
+
+        # Step 1: Get max date from existing transactions table
+        logging.info(f"Getting max date for account: '{account_id}'")
+        max_date = get_max_date_string(
+            config=db_config,
+            table_name="account_transactions__booked",
+            date_field="booking_date",
+            filter_condition=f"account_id = '{account_id}'",
+        )
+        if max_date:
+            last_transaction_date = pendulum.parse(max_date).date()
+
+        logging.info(f"Getting data from date: '{last_transaction_date}'")
         transactions: list[AccountTransaction] = get_transaction_data_paginated(
             cfg=cfg,
             account_id=account_id,
             bearer_access_token=access_token.bearer_access_token,
-            last_transaction_date=Date(2025, 5, 1),
+            last_transaction_date=last_transaction_date,
             transaction_state="BOOKED",
         )
 
-        logging.info("Loading to sqlite")
-        db_path = Path.cwd() / "comdirect.db"
-        db_config = SQLiteConfig(db_path=db_path)
         record_count = write_account_transactions_booked(
             transactions=transactions, account_id=account_id, config=db_config
         )
         logging.info(f"Loaded {record_count} records")
+
+    logging.info("All done")
 
 
 if __name__ == "__main__":

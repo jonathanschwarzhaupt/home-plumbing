@@ -1,7 +1,8 @@
 import logging
 import json
 from typing import Literal
-from datetime import date
+from pendulum import Date
+from pydantic import ValidationError
 
 from .types import APIConfig, AccountBalance, AccountTransaction
 from .helpers import make_client, get_client_request_id, get_session_id, get_request_url
@@ -52,7 +53,7 @@ def get_transaction_data_paginated(
     cfg: APIConfig,
     account_id: str,
     bearer_access_token: str,
-    last_transaction_date: date,
+    last_transaction_date: Date,
     transaction_state: Literal["BOOKED", "NOTBOOKED", "BOTH"],
 ) -> list[AccountTransaction]:
     """Gets all transactions for a given account until a passed date"""
@@ -122,7 +123,12 @@ def get_transaction_data_paginated(
                 f"Last transaction date: {max_date} is not smaller than last transaction date: {last_transaction_date}. Continuing"
             )
 
-    finally:
-        http_client.close()
         logger.info(f"Returning {len(result)} transactions.")
         return result
+
+    except ValidationError as e:
+        logging.error(f"Pydantic caught unexpected data from the API: '{e}'")
+        raise e
+
+    finally:
+        http_client.close()
