@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass, field
-from datetime import date
+from pendulum import Date
 import pendulum
 from pendulum import DateTime
 from typing import Optional, Any, Dict
@@ -114,9 +114,12 @@ class AccountBalance(BaseModel):
 
 
 class AccountTransaction(BaseModel):
+    # required to make Pydantic work with pendulum
+    model_config = {"arbitrary_types_allowed": True}
+
     reference: Optional[str]
     booking_status: str
-    booking_date: Optional[date]
+    booking_date: Optional[Date]
     amount__value: float
     amount__unit: str
     remitter__holder_name: Optional[str]
@@ -124,7 +127,7 @@ class AccountTransaction(BaseModel):
     creditor__holder_name: Optional[str]
     creditor__iban: Optional[str]
     creditor__bic: Optional[str]
-    valuta_date: Optional[date]
+    valuta_date: Optional[Date]
     direct_debit_creditor_id: Optional[str]
     direct_debit_mandate_id: Optional[str]
     end_to_end_reference: Optional[str]
@@ -143,6 +146,24 @@ class AccountTransaction(BaseModel):
         """Remove whitespaces from field"""
         if v and len(v.strip()) == 0:
             return None
+        return v
+
+    @field_validator("booking_date", mode="before")
+    def parse_booking_date(cls, v) -> Optional[Date]:
+        """Parse booking date string to pendulum Date"""
+        if v is None or v == "":
+            return None
+        if isinstance(v, str):
+            return pendulum.parse(v).date()
+        return v
+
+    @field_validator("valuta_date", mode="before")
+    def parse_valuta_date(cls, v) -> Optional[Date]:
+        """Parse valuta date string to pendulum Date"""
+        if v is None or v == "":
+            return None
+        if isinstance(v, str):
+            return pendulum.parse(v).date()
         return v
 
     @model_validator(mode="before")

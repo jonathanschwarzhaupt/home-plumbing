@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from datetime import date
+from pendulum import Date
 
 from plumbing_core.sources.comdirect import (
     AccountTransaction,
@@ -43,7 +43,7 @@ def main() -> None:
             cfg=cfg,
             account_id=account_id,
             bearer_access_token=access_token.bearer_access_token,
-            last_transaction_date=date(2025, 5, 1),
+            last_transaction_date=Date(2025, 5, 1),
             transaction_state="BOOKED",
         )
 
