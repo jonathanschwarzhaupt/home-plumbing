@@ -4,14 +4,6 @@ on:
   push:
     tags:
       - "plumbing-airflow-v*"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "src/plumbing_core/**"
-      - "src/plumbing_airflow/pyproject.toml"
-      - "src/plumbing_airflow/Dockerfile"
-      - "src/plumbing_airflow/dags/**"
 
 env:
   REGISTRY: ghcr.io
@@ -21,8 +13,8 @@ jobs:
   build-and-push-airflow:
     name: Build and Push Airflow
     runs-on: ubuntu-latest
-    # Run for plumbing-airflow release tags OR pull requests
-    if: startsWith(github.ref, 'refs/tags/plumbing-airflow-v') || github.event_name == 'pull_request'
+    # Run only for plumbing-airflow release tags
+    if: startsWith(github.ref, 'refs/tags/plumbing-airflow-v')
 
     permissions:
       contents: read
@@ -49,16 +41,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract tag or branch name
+      - name: Extract tag name
         id: tag
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "TAG=pr-${{ github.event.number }}" >> $GITHUB_OUTPUT
-            echo "IS_PR=true" >> $GITHUB_OUTPUT
-          else
-            echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-            echo "IS_PR=false" >> $GITHUB_OUTPUT
-          fi
+          echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -72,9 +58,8 @@ jobs:
             CI_COMMIT_HASH=${{ github.sha }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.AIRFLOW_IMAGE_NAME }}:${{ steps.tag.outputs.TAG }}
-            ${{ steps.tag.outputs.IS_PR == 'false' && format('{0}/{1}:latest', env.REGISTRY, env.AIRFLOW_IMAGE_NAME) || '' }}
+            ${{ env.REGISTRY }}/${{ env.AIRFLOW_IMAGE_NAME }}:latest
 
     outputs:
       tag: ${{ steps.tag.outputs.TAG }}
-      is_pr: ${{ steps.tag.outputs.IS_PR }}
       app: airflow
