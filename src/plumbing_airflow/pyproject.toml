@@ -3,6 +3,7 @@ name = "plumbing-airflow"
 version = "0.0.1"
 description = "Plumbing Airflow - plumbing things together in an orchestrated manner"
 readme = "README.md"
+authors = [{ name = "Jonathan Schwarzhaupt", email = "jonathan@example.com" }]
 requires-python = ">=3.12"
 dependencies = ["numpy>=2.3.1", "pandas>=2.3.1", "plumbing-core"]
 
@@ -11,3 +12,10 @@ dev = ["apache-airflow>=3.0.3", "ruff>=0.12.3"]
 
 [tool.uv.sources]
 plumbing-core = { path = "../plumbing_core" }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["dags/plumbing_airflow"]

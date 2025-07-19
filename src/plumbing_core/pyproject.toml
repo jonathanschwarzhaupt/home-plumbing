@@ -3,7 +3,7 @@ name = "plumbing-core"
 version = "0.0.1"
 description = "My core plumbing code"
 readme = "README.md"
-authors = [{ name = "Jonathan Schwarzhaupt", email = "jonathan@gmail.com" }]
+authors = [{ name = "Jonathan Schwarzhaupt", email = "jonathan@example.com" }]
 
 requires-python = ">=3.12"
 dependencies = [
