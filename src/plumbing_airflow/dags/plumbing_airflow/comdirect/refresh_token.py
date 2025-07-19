@@ -1,3 +1,45 @@
+"""
+# Comdirect Access Token Refresh DAG
+
+Automatically refreshes Comdirect access tokens before they expire to maintain API connectivity.
+
+## Overview
+
+This DAG monitors and refreshes Comdirect OAuth access tokens:
+1. Checks if the current access token needs refreshing
+2. Calls the refresh token API endpoint if refresh is needed
+3. Updates the stored token in Airflow Variables
+4. Skips execution if token is still valid
+
+## Schedule
+
+- **Frequency**: Every 2 minutes (`*/2 * * * *`)
+- **Purpose**: Proactive token management to prevent API authentication failures
+
+## Tasks
+
+- `refresh_auth_token`: Checks token expiry and refreshes if necessary
+- `save_auth_token`: Updates the refreshed token in Airflow Variables
+
+## Token Management
+
+- **Refresh Logic**: Only refreshes tokens that are close to expiration
+- **Skip Behavior**: Uses `AirflowSkipException` when refresh is not needed
+- **Storage**: Updated tokens are stored in Airflow Variable `comdirect_access_token`
+
+## Requirements
+
+- Valid refresh token in existing access token data
+- API configuration with client credentials
+- Network connectivity to Comdirect OAuth endpoints
+
+## Error Handling
+
+- Skips execution when token is still valid (not an error)
+- Logs token expiration times for monitoring
+- Fails gracefully if refresh API call fails
+"""
+
 from airflow.sdk import dag, task
 from airflow.exceptions import AirflowSkipException
 from plumbing_core.sources.comdirect import refresh_token
