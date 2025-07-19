@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.1.1...plumbing-airflow-v0.1.2) (2025-07-19)
+
+
+### Bug Fixes
+
+* **plumbing_airflow:** separate method for writing not booked transac… ([1464695](https://github.com/jonathanschwarzhaupt/home-plumbing/commit/1464695f88dd529a761f9749b014043022a8ccdb))
+* **plumbing_airflow:** separate method for writing not booked transactions ([c31b4c1](https://github.com/jonathanschwarzhaupt/home-plumbing/commit/c31b4c1c9c359d17503da3af53aad2b74ff97bab))
+
 ## [0.1.1](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.1.0...plumbing-airflow-v0.1.1) (2025-07-19)
 
 
