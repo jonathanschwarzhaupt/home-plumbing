@@ -175,14 +175,14 @@ def write_account_balances(
             raise
 
 
-def write_account_transactions(
+def write_account_transactions_booked(
     transactions: List[AccountTransaction],
     account_id: str,
     config: SQLiteConfig,
     table_name: str = "account_transactions__booked",
     delete_keys: List[str] = ["account_id", "reference"],
 ) -> int:
-    """Write account transactions using transactional delete+insert"""
+    """Write account transactions using transactional 'insert if not exists'"""
 
     if not transactions:
         logger.info("No transactions passed, returning")
@@ -209,6 +209,49 @@ def write_account_transactions(
                     df=df,
                     table_name=table_name,
                     on_conflict_keys=delete_keys,
+                )
+
+            conn.execute("COMMIT")
+            logger.info(f"Transaction commited: {inserted_count} records processesed")
+            return inserted_count
+
+        except Exception as e:
+            conn.execute("ROLLBACK")
+            logger.error(f"Transaction rolled back due to error: {e}")
+            raise
+
+
+def write_account_transactions_not_booked(
+    transactions: List[AccountTransaction],
+    account_id: str,
+    config: SQLiteConfig,
+    table_name: str = "account_transactions__not_booked",
+    delete_keys: List[str] = ["account_id"],
+) -> int:
+    """Write not-booked account transactions using transactional 'delete+insert'"""
+
+    if not transactions:
+        logger.info("No transactions passed, returning")
+        return 0
+
+    df = pd.DataFrame([transaction.model_dump() for transaction in transactions])
+    df["account_id"] = account_id
+    df["_inserted_at_day"] = pendulum.now("CET").to_date_string()
+    df["_inserted_at_ts"] = pendulum.now("CET").to_datetime_string()
+
+    with get_duckdb_connection(config.db_path) as conn:
+        logger.info("Beginning transaction")
+        conn.execute("BEGIN TRANSACTION")
+
+        try:
+            table_created = _ensure_table_exists(
+                conn=conn, table_name=table_name, df=df
+            )
+            if table_created:
+                inserted_count = len(df)
+            else:
+                inserted_count = _delete_and_insert(
+                    conn=conn, df=df, table_name=table_name, delete_keys=delete_keys
                 )
 
             conn.execute("COMMIT")
