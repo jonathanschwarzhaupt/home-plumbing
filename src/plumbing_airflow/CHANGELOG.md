@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.1.0...plumbing-airflow-v0.1.1) (2025-07-19)
+
+
+### Bug Fixes
+
+* **plumbing_core:** add doc_md and dag owner ([7cdaf77](https://github.com/jonathanschwarzhaupt/home-plumbing/commit/7cdaf7713c6f357320a0ed1d2700898af38431fc))
+* **plumbing_core:** add doc_md and dag owner ([0ecd206](https://github.com/jonathanschwarzhaupt/home-plumbing/commit/0ecd206a91203efb4588e23ebf6e49eb16dc0a42))
+
 ## [0.1.0](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.0.1...plumbing-airflow-v0.1.0) (2025-07-19)
 
 
