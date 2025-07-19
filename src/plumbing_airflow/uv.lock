@@ -1263,7 +1263,7 @@ wheels = [
 [[package]]
 name = "plumbing-airflow"
 version = "0.0.1"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "numpy" },
     { name = "pandas" },

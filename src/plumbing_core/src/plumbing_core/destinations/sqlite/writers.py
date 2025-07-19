@@ -13,7 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 def _ensure_table_exists(
-    conn: duckdb.DuckDBPyConnection, table_name: str, df: pd.DataFrame
+    conn: duckdb.DuckDBPyConnection,
+    table_name: str,
+    df: pd.DataFrame,
 ) -> bool:
     """Ensure table exists in SQLite database, create if needed"""
 
@@ -173,7 +175,7 @@ def write_account_balances(
             raise
 
 
-def write_account_transactions_booked(
+def write_account_transactions(
     transactions: List[AccountTransaction],
     account_id: str,
     config: SQLiteConfig,

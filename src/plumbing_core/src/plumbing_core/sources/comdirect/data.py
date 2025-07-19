@@ -97,6 +97,10 @@ def get_transaction_data_paginated(
 
             logger.info(f"Obtained {len(response.json()['values'])} records from API")
 
+            if not response.json()["values"]:
+                logger.info("No more records available from API, finishing pagination")
+                break
+
             res = [
                 AccountTransaction(**transaction)
                 for transaction in response.json()["values"]
@@ -106,13 +110,16 @@ def get_transaction_data_paginated(
             )
             result.extend(res)
 
-            max_date = max(
-                [
-                    transaction.booking_date
-                    for transaction in res
-                    if transaction.booking_date
-                ]
-            )
+            booking_dates = [
+                transaction.booking_date
+                for transaction in res
+                if transaction.booking_date
+            ]
+            if not booking_dates:
+                logger.info("No transactions with valid booking dates found")
+                break
+
+            max_date = max(booking_dates)
             pagination_index += len(res)
 
             if max_date < last_transaction_date:

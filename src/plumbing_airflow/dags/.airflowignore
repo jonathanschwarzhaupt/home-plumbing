@@ -1,0 +1,35 @@
+# Airflow ignore file
+# Exclude utility packages from DAG scanning
+
+# Package directories (not DAGs)
+plumbing_airflow/shared/
+plumbing_airflow/__init__.py
+__init__.py
+
+# Old files to ignore during transition
+dag_config.py
+comdirect_auth.py
+comdirect_refresh_token.py
+comdirect_data.py
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
