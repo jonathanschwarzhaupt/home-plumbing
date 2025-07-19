@@ -1,0 +1,18 @@
+{
+  "packages": {
+    "src/plumbing_airflow": {
+      "release-type": "python",
+      "package-name": "plumbing-airflow",
+      "component": "plumbing-airflow",
+      "include-component-in-tag": true,
+      "changelog-path": "CHANGELOG.md",
+      "extra-files": [
+        {
+          "type": "toml",
+          "path": "uv.lock",
+          "jsonpath": "$.package[?(@.name.value=='plumbing-airflow')].version"
+        }
+      ]
+    }
+  }
+}
