@@ -51,7 +51,8 @@ from plumbing_core.sources.comdirect import (
 )
 from plumbing_core.destinations.sqlite import (
     write_account_balances,
-    write_account_transactions,
+    write_account_transactions_booked,
+    write_account_transactions_not_booked,
     get_max_date_string,
 )
 from plumbing_airflow.shared.dag_config import (
@@ -131,7 +132,7 @@ def comdirect_data():
                 transaction_state="BOOKED",
             )
 
-            record_count = write_account_transactions(
+            record_count = write_account_transactions_booked(
                 transactions=transactions, account_id=account_id, config=db_config
             )
             logging.info(f"Loaded {record_count} records to booked transactions table")
@@ -160,7 +161,7 @@ def comdirect_data():
                 transaction_state="NOTBOOKED",
             )
 
-            record_count = write_account_transactions(
+            record_count = write_account_transactions_not_booked(
                 transactions=transactions,
                 account_id=account_id,
                 config=db_config,
