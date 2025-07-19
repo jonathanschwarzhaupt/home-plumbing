@@ -3,7 +3,7 @@ name: Build and Push Airflow Docker Image
 on:
   push:
     tags:
-      - "airflow*"
+      - "plumbing-airflow-v*"
   pull_request:
     branches:
       - main
@@ -21,8 +21,8 @@ jobs:
   build-and-push-airflow:
     name: Build and Push Airflow
     runs-on: ubuntu-latest
-    # Run for airflow tags OR pull requests
-    if: contains(github.ref, 'airflow') || github.event_name == 'pull_request'
+    # Run for plumbing-airflow release tags OR pull requests
+    if: startsWith(github.ref, 'refs/tags/plumbing-airflow-v') || github.event_name == 'pull_request'
 
     permissions:
       contents: read
