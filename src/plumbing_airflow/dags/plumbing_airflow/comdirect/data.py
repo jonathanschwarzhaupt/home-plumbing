@@ -1,3 +1,46 @@
+"""
+# Comdirect Data Extraction DAG
+
+Regularly fetches and stores Comdirect account balances and transaction data into SQLite database.
+
+## Overview
+
+This DAG performs comprehensive data extraction from Comdirect banking API:
+1. Retrieves current account balances for all accounts
+2. Fetches booked transactions (incremental updates based on last booking date)
+3. Fetches not-booked/pending transactions (full refresh)
+4. Stores all data in SQLite database tables
+
+## Schedule
+
+- **Frequency**: Every hour (`0 * * * *`)
+- **Purpose**: Keep financial data up-to-date for analysis and reporting
+
+## Tasks
+
+- `get_account_balances_data`: Fetches current balances and returns account IDs
+- `get_account_transactions_data_booked`: Incremental sync of booked transactions
+- `get_account_transactions_data_not_booked`: Full refresh of pending transactions
+
+## Database Tables
+
+- `account_balances`: Current account balance snapshots
+- `account_transactions__booked`: Confirmed/settled transactions
+- `account_transactions__not_booked`: Pending/unconfirmed transactions
+
+## Requirements
+
+- Valid access token in Airflow Variable `comdirect_access_token`
+- Environment variable: `COMDIRECT__SQLITE_PATH`
+- SQLite database with proper schema
+
+## Data Flow
+
+1. **Balance Extraction**: Fetches all account balances and stores them
+2. **Transaction Sync**: For each account, performs incremental sync of booked transactions
+3. **Pending Transactions**: Refreshes all pending transactions across accounts
+"""
+
 from airflow.sdk import dag, task
 
 from plumbing_core.sources.comdirect import (
