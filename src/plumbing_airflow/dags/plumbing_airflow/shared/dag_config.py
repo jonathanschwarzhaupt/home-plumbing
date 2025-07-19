@@ -19,8 +19,17 @@ DEFAULT_TRANSACTION_DATE = Date(2025, 1, 1)
 
 def get_default_dag_args() -> Dict[str, Any]:
     """Get default DAG arguments for Comdirect workflows."""
+    import inspect
+
+    caller_module = inspect.getmodule(inspect.stack()[1][0])
     return {
         "start_date": DEFAULT_START_DATE,
+        "default_args": {
+            "owner": "Jonathan",
+        },
+        "doc_md": caller_module.__doc__
+        if caller_module and caller_module.__doc__
+        else None,
     }
 
 
