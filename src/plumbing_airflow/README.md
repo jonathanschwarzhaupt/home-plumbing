@@ -33,6 +33,7 @@ COMDIRECT_CLIENT_ID=your_client_id
 COMDIRECT_CLIENT_SECRET=your_client_secret
 COMDIRECT_USERNAME=your_username
 COMDIRECT_PASSWORD=your_password
+COMDIRECT__SQLITE_PATH="/opt/airflow/database"
 ```
 
 ### 2. Local Development
@@ -72,40 +73,49 @@ src/plumbing_airflow/
 ├── uv.lock                     # Locked dependencies
 ├── Dockerfile                  # Custom Airflow image with plumbing_core
 ├── docker-compose.yaml         # Complete Airflow cluster setup
-├── dags/
-│   └── comdirect_auth.py      # Comdirect authentication DAG
-├── plugins/                   # Custom Airflow plugins
-└── logs/                      # Airflow execution logs
+├── dags/                       # DAG Python package
+│   ├── __init__.py
+│   └── plumbing_airflow/
+│       ├── __init__.py
+│       ├── comdirect/
+│       │   ├── __init__.py
+│       │   ├── auth.py           # Authentication DAG
+│       │   ├── data.py           # Data extraction DAG
+│       │   └── refresh_token.py  # Token refresh DAG
+│       └── shared/
+│           ├── __init__.py
+│           └── dag_config.py   # Shared DAG configurations
+├── plugins/                    # Custom Airflow plugins
+├── logs/                       # Airflow execution logs
+└── database/                   # SQLite database storage
 ```
 
 ## DAG Examples
 
 ### Comdirect Authentication DAG
 
-The `comdirect_auth` DAG demonstrates the complete OAuth 2.0 flow with PhotoTan challenge:
+The `comdirect_auth` DAG demonstrates the complete OAuth 2.0 flow with PhotoTan challenge, leveraging shared configuration:
 
 ```python
-from airflow.sdk import dag, task, Variable
-from plumbing_core.sources.comdirect import (
-    APIConfig, get_session_id, authenticate_user_credentials
+from airflow.sdk import dag
+from plumbing_core.sources.comdirect import get_session_id, authenticate_user_credentials
+from plumbing_airflow.shared.dag_config import (
+    get_default_dag_args, get_comdirect_tags, get_api_config, 
+    save_auth_token
 )
 
-@dag(start_date=datetime(2025, 4, 1), schedule=None, tags=["comdirect"])
+@dag(
+    dag_args=get_default_dag_args(),
+    schedule=None, 
+    tags=get_comdirect_tags("auth")
+)
 def comdirect_auth():
     @task
     def get_auth_token():
-        cfg = APIConfig()
+        cfg = get_api_config()
         session_id = get_session_id()
         access_token = authenticate_user_credentials(cfg=cfg, session_id=session_id)
         return access_token.to_dict()
-
-    @task
-    def save_auth_token(access_token) -> None:
-        Variable.set(
-            key="comdirect_access_token", 
-            value=access_token, 
-            serialize_json=True
-        )
 
     access_token = get_auth_token()
     save_auth_token(access_token)
@@ -114,9 +124,49 @@ def comdirect_auth():
 **Features:**
 
 - Task Flow API with @task decorators
-- Automatic XCom passing between tasks
-- Variable storage for token persistence
+- Shared configuration utilities for consistency
+- Standardized DAG arguments and tags
+- Reusable authentication token management
 - Error handling and retry logic
+
+## Shared DAG Configuration
+
+The `plumbing_airflow.shared.dag_config` module provides reusable configuration and utilities that promote consistency across all Comdirect DAGs:
+
+### Configuration Constants
+
+```python
+from plumbing_airflow.shared.dag_config import (
+    DEFAULT_START_DATE,              # Date(2025, 4, 1)
+    COMDIRECT_ACCESS_TOKEN_KEY,      # "comdirect_access_token"
+    DEFAULT_TRANSACTION_DATE         # Date(2025, 1, 1)
+)
+```
+
+### Shared Utilities
+
+**DAG Configuration:**
+
+- `get_default_dag_args()` - Standard DAG arguments for all workflows
+- `get_comdirect_tags(workflow_type)` - Consistent tagging (`["comdirect", "auth"]`, `["comdirect", "data"]`)
+
+**Authentication Management:**
+
+- `get_auth_token()` - Task to retrieve stored access token from Airflow Variables
+- `save_auth_token(access_token)` - Task to persist access token to Airflow Variables
+
+**API & Database Configuration:**
+
+- `get_api_config(use_env_file=False)` - Standardized Comdirect API configuration
+- `get_database_config()` - SQLite database configuration using mounted volume
+- `create_access_token(access_token_json)` - Convert JSON to AccessToken instance
+
+### Benefits
+
+- **Consistency**: All DAGs use the same configuration patterns and constants
+- **Maintainability**: Changes to common settings propagate automatically
+- **Reusability**: Authentication and database tasks shared across workflows
+- **Type Safety**: Centralized typing and validation for configuration objects
 
 ## Development Workflow
 
@@ -159,10 +209,11 @@ Development volumes are automatically mounted:
 
 ```yaml
 volumes:
-  - ./dags:/opt/airflow/dags      # DAG files
-  - ./logs:/opt/airflow/logs      # Execution logs
-  - ./config:/opt/airflow/config  # Configuration files
-  - ./plugins:/opt/airflow/plugins # Custom plugins
+  - ./dags:/opt/airflow/dags          # DAG Python package
+  - ./logs:/opt/airflow/logs          # Execution logs
+  - ./config:/opt/airflow/config      # Configuration files
+  - ./plugins:/opt/airflow/plugins    # Custom plugins
+  - ./database:/opt/airflow/database  # SQLite database storage
 ```
 
 ## Configuration

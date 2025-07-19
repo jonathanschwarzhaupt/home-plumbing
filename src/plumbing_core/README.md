@@ -65,6 +65,7 @@ Environment variables:
 Use these to instantiate the `APIConfig`, or pass them explicitly.
 
 For SQLite destinations:
+
 - `SQLITE_DB_PATH` - Path to SQLite database file
 
 ## Code Structure
@@ -91,7 +92,8 @@ For SQLite destinations:
 │               ├── __init__.py
 │               ├── config.py       <-- SQLite configuration
 │               ├── connection.py   <-- DuckDB connection manager
-│               └── writers.py      <-- Data writers with upsert logic
+│               ├── writers.py      <-- Data writers with upsert logic
+│               └── readers.py      <-- Data readers
 ├── examples                        <-- example scripts to try
 │   ├── comdirect_auth.py
 │   └── comdirect_account_balances.py
@@ -106,13 +108,9 @@ For SQLite destinations:
 
 ### SQLite + DuckDB Integration
 
-The SQLite destination uses an interesting architectural pattern: **SQLite for storage, DuckDB for analytics**. 
+The SQLite destination uses an interesting architectural pattern: **SQLite for storage, DuckDB for analytics**.
 
 - **SQLite**: Single-file databases with no infrastructure overhead. Each source gets its own `.db` file with a single writer, eliminating concurrency issues
 - **DuckDB**: Acts as a bridge during analytics, allowing complex queries across multiple SQLite files and seamless integration with pandas/arrow ecosystems
 
 This pattern scales well for modestly-sized data platforms where you want the simplicity of file-based storage but the analytical power of modern columnar query engines. DuckDB can attach multiple SQLite databases and perform federated queries, making it perfect for this use case.
-
-## Contributing
-
-> This is my personal plumbing toolbox - feel free to open issues o rPRs if you spot something, but no promises!
