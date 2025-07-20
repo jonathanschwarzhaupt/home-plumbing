@@ -44,7 +44,7 @@ jobs:
       - name: Extract tag name
         id: tag
         run: |
-          echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          echo "TAG=${GITHUB_REF#refs/tags/plumbing-airflow-}" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
