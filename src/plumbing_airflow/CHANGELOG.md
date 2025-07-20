@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.1.2...plumbing-airflow-v0.2.0) (2025-07-20)
+
+
+### Features
+
+* **plumbing_core:** bake DAGs into the airflow image ([25d3572](https://github.com/jonathanschwarzhaupt/home-plumbing/commit/25d357206389d4accc4918de270eecebfc62a5b7))
+* **plumbing_core:** bake DAGs into the airflow image ([9686465](https://github.com/jonathanschwarzhaupt/home-plumbing/commit/96864656a2ccad7e696b82c81376a5478110b7ec))
+
 ## [0.1.2](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.1.1...plumbing-airflow-v0.1.2) (2025-07-19)
 
 
