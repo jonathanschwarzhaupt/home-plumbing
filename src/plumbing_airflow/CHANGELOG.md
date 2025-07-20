@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.2.0...plumbing-airflow-v0.2.1) (2025-07-20)
+
+
+### Bug Fixes
+
+* **plumbing_airflow:** comment to trigger ci ([53d6843](https://github.com/jonathanschwarzhaupt/home-plumbing/commit/53d6843b190175478dd1a3df62fd28c0422956f1))
+
 ## [0.2.0](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.1.2...plumbing-airflow-v0.2.0) (2025-07-20)
 
 
