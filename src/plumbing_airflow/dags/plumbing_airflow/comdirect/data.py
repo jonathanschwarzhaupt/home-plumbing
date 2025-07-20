@@ -1,7 +1,7 @@
 """
 # Comdirect Data Extraction DAG
 
-Regularly fetches and stores Comdirect account balances and transaction data into SQLite database.
+Regularly fetches and stores Comdirect account balances and transaction data (booked and notbooked) into SQLite database.
 
 ## Overview
 
