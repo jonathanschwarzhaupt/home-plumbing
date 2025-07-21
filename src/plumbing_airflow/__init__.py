@@ -5,4 +5,4 @@ This package provides Apache Airflow DAGs and utilities for extracting and
 processing financial data from Comdirect banking API.
 """
 
-__version__ = "0.0.1"
+__version__ = "0.2.2"
