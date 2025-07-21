@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "src/plumbing_airflow/dags/**"
-      - "src/plumbing_airflow/plugins/**"
 
 jobs:
   release-please:
