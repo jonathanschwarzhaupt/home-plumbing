@@ -6,12 +6,6 @@ plumbing_airflow/shared/
 plumbing_airflow/__init__.py
 __init__.py
 
-# Old files to ignore during transition
-dag_config.py
-comdirect_auth.py
-comdirect_refresh_token.py
-comdirect_data.py
-
 # Python cache
 __pycache__/
 *.py[cod]
