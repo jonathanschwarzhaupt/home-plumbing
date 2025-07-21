@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.2](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.2.1...plumbing-airflow-v0.2.2) (2025-07-21)
+
+
+### Bug Fixes
+
+* **plumbing_airflow:** remove stale items from airflowignore ([31f5e6d](https://github.com/jonathanschwarzhaupt/home-plumbing/commit/31f5e6db5574888adcdb89449907d9623b68476f))
+* **plumbing_airflow:** remove stale items from airflowignore ([43edae5](https://github.com/jonathanschwarzhaupt/home-plumbing/commit/43edae5f8d2a50e430f2d9e1ed678fb0fed1f37c))
+
 ## [0.2.1](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.2.0...plumbing-airflow-v0.2.1) (2025-07-20)
 
 
