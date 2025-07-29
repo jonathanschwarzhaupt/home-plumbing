@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.2.2...plumbing-airflow-v0.3.0) (2025-07-29)
+
+
+### Features
+
+* add turso destination for remote sqlite ([#17](https://github.com/jonathanschwarzhaupt/home-plumbing/issues/17)) ([24c965f](https://github.com/jonathanschwarzhaupt/home-plumbing/commit/24c965f8d184fd59514417ac9346e92c7e5216c0))
+
 ## [0.2.2](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.2.1...plumbing-airflow-v0.2.2) (2025-07-21)
 
 
