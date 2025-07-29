@@ -3,10 +3,11 @@
 import os
 import logging
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Literal
 from pendulum import datetime, Date
 
 from airflow.sdk import task, Variable
+from plumbing_core.destinations.turso import TursoConfig
 from plumbing_core.sources.comdirect import APIConfig, AccessToken
 from plumbing_core.destinations.sqlite import SQLiteConfig
 
@@ -70,10 +71,19 @@ def get_api_config(use_env_file: bool = False) -> APIConfig:
     return APIConfig()
 
 
-def get_database_config() -> SQLiteConfig:
+def get_database_config(
+    db_type: Literal["sqlite", "turso"],
+) -> SQLiteConfig | TursoConfig:
     """Get standardized database configuration."""
-    db_path = Path(os.environ["COMDIRECT__SQLITE_PATH"]) / "comdirect.db"
-    return SQLiteConfig(db_path=db_path)
+
+    if db_type == "sqlite":
+        db_path = Path(os.environ["COMDIRECT__SQLITE_PATH"]) / "comdirect.db"
+        return SQLiteConfig(db_path=db_path)
+    elif db_type == "turso":
+        db_path = Path(os.environ["COMDIRECT__TURSO_PATH"]) / "comdirect_turso.db"
+        return TursoConfig(db_path=db_path)
+    else:
+        raise ValueError("db_type must be either 'sqlite' or 'turso'")
 
 
 def create_access_token(access_token_json: Dict[str, Any]) -> AccessToken:
