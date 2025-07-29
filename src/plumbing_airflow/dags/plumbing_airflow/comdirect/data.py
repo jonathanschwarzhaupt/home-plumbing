@@ -48,8 +48,10 @@ from plumbing_core.sources.comdirect import (
     get_accounts_balances,
     AccountTransaction,
     get_transaction_data_paginated,
+    COMDIRECT_SCHEMAS,
 )
-from plumbing_core.destinations.sqlite import (
+from plumbing_core.destinations.turso import (
+    TursoConfig,
     write_account_balances,
     write_account_transactions_booked,
     write_account_transactions_not_booked,
@@ -88,9 +90,11 @@ def comdirect_data():
         )
 
         logging.info("Loading to sqlite")
-        db_config = get_database_config()
+        db_config: TursoConfig = get_database_config(db_type="turso")
         record_count = write_account_balances(
-            balances=account_balances, config=db_config
+            balances=account_balances,
+            config=db_config,
+            ddl=COMDIRECT_SCHEMAS["account_balances"],
         )
         logging.info(f"Loaded {record_count} records")
 
@@ -104,7 +108,8 @@ def comdirect_data():
 
         access_token = create_access_token(access_token_json)
         cfg = get_api_config(use_env_file=True)
-        db_config = get_database_config()
+        db_config: TursoConfig = get_database_config(db_type="turso")
+        table_name = "account_transactions__booked"
 
         for account_id in account_ids:
             # Set default from when to fetch transactions
@@ -114,7 +119,7 @@ def comdirect_data():
             logging.info(f"Getting max date for account: '{account_id}'")
             max_date = get_max_date_string(
                 config=db_config,
-                table_name="account_transactions__booked",
+                table_name=table_name,
                 date_field="booking_date",
                 filter_condition=f"account_id = '{account_id}'",
             )
@@ -133,7 +138,10 @@ def comdirect_data():
             )
 
             record_count = write_account_transactions_booked(
-                transactions=transactions, account_id=account_id, config=db_config
+                transactions=transactions,
+                account_id=account_id,
+                config=db_config,
+                ddl=COMDIRECT_SCHEMAS[table_name],
             )
             logging.info(f"Loaded {record_count} records to booked transactions table")
 
@@ -147,7 +155,8 @@ def comdirect_data():
 
         access_token = create_access_token(access_token_json)
         cfg = get_api_config(use_env_file=True)
-        db_config = get_database_config()
+        db_config: TursoConfig = get_database_config(db_type="turso")
+        table_name = "account_transactions__not_booked"
 
         for account_id in account_ids:
             last_transaction_date = DEFAULT_TRANSACTION_DATE
@@ -165,8 +174,9 @@ def comdirect_data():
                 transactions=transactions,
                 account_id=account_id,
                 config=db_config,
-                table_name="account_transactions__not_booked",
+                table_name=table_name,
                 delete_keys=["account_id"],
+                ddl=COMDIRECT_SCHEMAS[table_name],
             )
             logging.info(
                 f"Loaded {record_count} records to not-booked transactions table"
