@@ -106,6 +106,9 @@ class AccountBalance(BaseModel):
     available_cash_amount__unit: str
     available_cash_amount_eur__value: float
     available_cash_amount_eur__unit: str
+    # Timestamp fields for database tracking
+    _inserted_at_day: Optional[str] = None
+    _inserted_at_ts: Optional[str] = None
 
     @model_validator(mode="before")
     def _flatten(cls, values):
@@ -135,6 +138,11 @@ class AccountTransaction(BaseModel):
     remittance_info: str
     transaction_type__key: str
     transaction_type__text: str
+    # Timestamp fields for database tracking
+    _inserted_at_day: Optional[str] = None
+    _inserted_at_ts: Optional[str] = None
+    # Additional field for transaction tables
+    account_id: Optional[str] = None
 
     @field_validator("remittance_info", mode="after")
     def strip_whitespace(cls, v: str) -> str:

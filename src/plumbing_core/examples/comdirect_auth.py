@@ -15,7 +15,7 @@ def main() -> None:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    cfg = APIConfig(_env_file=".env")
+    cfg = APIConfig(_env_file=".env.comdirect")
     session_id = get_session_id()
 
     access_token = authenticate_user_credentials(cfg=cfg, session_id=session_id)
