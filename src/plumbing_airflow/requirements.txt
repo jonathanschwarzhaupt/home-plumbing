@@ -20,6 +20,8 @@ idna==3.10
     # via
     #   anyio
     #   httpx
+libsql==0.1.8
+    # via plumbing-core
 numpy==2.3.1
     # via
     #   plumbing-airflow (pyproject.toml)

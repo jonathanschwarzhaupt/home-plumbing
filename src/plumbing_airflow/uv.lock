@@ -878,6 +878,23 @@ wheels = [
 ]
 
 [[package]]
+name = "libsql"
+version = "0.1.8"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/cb/9a/a1243db9b7ed51c491526e5a61b9d015fe272b9a6a7d9e346e38fdbbf983/libsql-0.1.8.tar.gz", hash = "sha256:a701c9b7e5ca0aeb92b718ee2d4892c31e91916ac4712db3cd0cdfbd99604f46", size = 33240, upload-time = "2025-07-29T10:38:07.433Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e8/ff/1b028873b1845d865e6926b5efa20244d55f039cbc35dbfc06b63fb154f7/libsql-0.1.8-cp312-cp312-macosx_10_12_x86_64.whl", hash = "sha256:bcd4097b507851d59530dd94daa6260350c1bcb829a0a35d4941042ef9081af5", size = 4970113, upload-time = "2025-07-29T10:37:47.1Z" },
+    { url = "https://files.pythonhosted.org/packages/45/b4/b0db473dd619e8442c926632ffc6c9049f2dc780f8a9987b99f2f99754b8/libsql-0.1.8-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:70484eab57e2c3c03057a06510fe0b62a636bc564e430008830f91fa3918a36b", size = 4726948, upload-time = "2025-07-29T10:37:48.707Z" },
+    { url = "https://files.pythonhosted.org/packages/13/a3/f0f32187ffd17cff9d19800f4311244c50cb60d6aa6ec655e5fd0f3d9016/libsql-0.1.8-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:74f3e999dd7a710dd5fc361f5d6299b7bbb1c62db9090ae7958d2d2cb49ff920", size = 5332778, upload-time = "2025-07-29T10:37:49.943Z" },
+    { url = "https://files.pythonhosted.org/packages/47/7f/7ef87249916d09460c9a20490d12d694396277907701d10582822797ae1c/libsql-0.1.8-cp312-cp312-win_amd64.whl", hash = "sha256:298ec12142b151d67cdd2a32b1a41473e0c6b20f6053d8c050174b16f373d458", size = 4246921, upload-time = "2025-07-29T10:37:51.554Z" },
+    { url = "https://files.pythonhosted.org/packages/bf/4e/b2c45188b4d0698bfca3e04a163da9983bfd46e103df7888c6b809f28f1c/libsql-0.1.8-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:31196711f07fcbbb6513beb8c274c529fe6cf9b5534a00f636d33d0262716146", size = 4969209, upload-time = "2025-07-29T10:37:52.876Z" },
+    { url = "https://files.pythonhosted.org/packages/08/de/47ff71f853d2eba26b6179202eebbe6fda518499418a0750f75f3d9009a6/libsql-0.1.8-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:ce2ebb0eae8cfeba3fe9966b20d6323f1549e3e6dab97c57ac4d70a3e75d2f92", size = 4725893, upload-time = "2025-07-29T10:37:54.454Z" },
+    { url = "https://files.pythonhosted.org/packages/76/87/b5651b6756926b1241ec56f94926f44d6fdb226fba10a542127e60fbf6ae/libsql-0.1.8-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:978f383780a5aa5caa83e59d8d5e129fa4d5ac70dca3674a71718f3f34dfc235", size = 5332428, upload-time = "2025-07-29T10:37:56.036Z" },
+    { url = "https://files.pythonhosted.org/packages/38/61/b84dd3fdc1513be38efd86c2594726f03110a1201716851fe5b77ab851f7/libsql-0.1.8-cp313-cp313-win_amd64.whl", hash = "sha256:87124d2ba6ab259e1d3e9ccde5f44165468bfd7cd2ce60df6854e1c37dd54b9b", size = 4246134, upload-time = "2025-07-29T10:37:57.665Z" },
+    { url = "https://files.pythonhosted.org/packages/ff/9e/3457d2b4a487133a5da67db6f172611640c110bfe75788e06068c6b23445/libsql-0.1.8-cp314-cp314-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c5aeeeee85fa2e72f6a695dc4ba96bcb7f865e979421a6bad1720eb721b55318", size = 5332880, upload-time = "2025-07-29T10:37:58.999Z" },
+]
+
+[[package]]
 name = "linkify-it-py"
 version = "2.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1296,6 +1313,7 @@ source = { directory = "../plumbing_core" }
 dependencies = [
     { name = "duckdb" },
     { name = "httpx" },
+    { name = "libsql" },
     { name = "pandas" },
     { name = "pendulum" },
     { name = "pydantic" },
@@ -1306,11 +1324,15 @@ dependencies = [
 requires-dist = [
     { name = "duckdb", specifier = ">=1.3.1" },
     { name = "httpx", specifier = ">=0.28.1" },
+    { name = "libsql", specifier = ">=0.1.6" },
     { name = "pandas", specifier = ">=2.3.0" },
     { name = "pendulum", specifier = ">=3.1.0" },
     { name = "pydantic", specifier = ">=2.11.4" },
     { name = "pydantic-settings", specifier = ">=2.9.1" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=8.4.1" }]
 
 [[package]]
 name = "protobuf"

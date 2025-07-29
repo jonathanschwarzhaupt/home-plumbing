@@ -11,9 +11,10 @@ from plumbing_core.sources.comdirect import (
     get_accounts_balances,
     get_session_id,
     get_transaction_data_paginated,
+    COMDIRECT_SCHEMAS,
 )
-from plumbing_core.destinations.sqlite import (
-    SQLiteConfig,
+from plumbing_core.destinations.turso import (
+    TursoConfig,
     write_account_transactions_booked,
     get_max_date_string,
 )
@@ -27,7 +28,7 @@ def main() -> None:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    cfg = APIConfig(_env_file=".env")
+    cfg = APIConfig(_env_file=".env.comdirect")
     session_id = get_session_id()
 
     access_token = authenticate_user_credentials(cfg=cfg, session_id=session_id)
@@ -43,8 +44,8 @@ def main() -> None:
         last_transaction_date = Date(2025, 6, 1)
         account_id = account.account_id
 
-        db_path = Path.cwd() / "comdirect.db"
-        db_config = SQLiteConfig(db_path=db_path)
+        db_path = Path.cwd() / "comdirect_turso.db"
+        db_config = TursoConfig(db_path=db_path)
 
         # Step 1: Get max date from existing transactions table
         logging.info(f"Getting max date for account: '{account_id}'")
@@ -67,7 +68,10 @@ def main() -> None:
         )
 
         record_count = write_account_transactions_booked(
-            transactions=transactions, account_id=account_id, config=db_config
+            transactions=transactions,
+            account_id=account_id,
+            config=db_config,
+            ddl=COMDIRECT_SCHEMAS["account_transactions__booked"],
         )
         logging.info(f"Loaded {record_count} records")
 

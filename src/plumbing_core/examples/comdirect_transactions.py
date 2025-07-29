@@ -10,9 +10,10 @@ from plumbing_core.sources.comdirect import (
     get_accounts_balances,
     get_session_id,
     get_transaction_data_paginated,
+    COMDIRECT_SCHEMAS,
 )
-from plumbing_core.destinations.sqlite import (
-    SQLiteConfig,
+from plumbing_core.destinations.turso import (
+    TursoConfig,
     write_account_transactions_booked,
 )
 
@@ -25,7 +26,7 @@ def main() -> None:
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    cfg = APIConfig(_env_file=".env")
+    cfg = APIConfig(_env_file=".env.comdirect")
     session_id = get_session_id()
 
     access_token = authenticate_user_credentials(cfg=cfg, session_id=session_id)
@@ -47,11 +48,14 @@ def main() -> None:
             transaction_state="BOOKED",
         )
 
-        logging.info("Loading to sqlite")
-        db_path = Path.cwd() / "comdirect.db"
-        db_config = SQLiteConfig(db_path=db_path)
+        logging.info("Loading to turso sqlite")
+        db_path = Path.cwd() / "comdirect_turso.db"
+        db_config = TursoConfig(db_path=db_path)
         record_count = write_account_transactions_booked(
-            transactions=transactions, account_id=account_id, config=db_config
+            transactions=transactions,
+            account_id=account_id,
+            config=db_config,
+            ddl=COMDIRECT_SCHEMAS["account_transactions__booked"],
         )
         logging.info(f"Loaded {record_count} records")
 
