@@ -1,7 +1,7 @@
 """
 # Comdirect Data Extraction DAG
 
-Regularly fetches and stores Comdirect account balances and transaction data (booked and notbooked) into SQLite database.
+Regularly fetches and stores Comdirect account balances and transaction data (booked and notbooked) into Turso SQLite embedded replica.
 
 ## Overview
 
@@ -9,7 +9,7 @@ This DAG performs comprehensive data extraction from Comdirect banking API:
 1. Retrieves current account balances for all accounts
 2. Fetches booked transactions (incremental updates based on last booking date)
 3. Fetches not-booked/pending transactions (full refresh)
-4. Stores all data in SQLite database tables
+4. Stores all data in SQLite database tables synced to its remote
 
 ## Schedule
 
@@ -31,8 +31,8 @@ This DAG performs comprehensive data extraction from Comdirect banking API:
 ## Requirements
 
 - Valid access token in Airflow Variable `comdirect_access_token`
-- Environment variable: `COMDIRECT__SQLITE_PATH`
-- SQLite database with proper schema
+- Environment variables: `COMDIRECT__TURSO_PATH`, `TURSO_SYNC_URL`, `TURSO_AUTH_TOKEN`
+- Turso account for embedded sqlite replicas that sync to their remote
 
 ## Data Flow
 

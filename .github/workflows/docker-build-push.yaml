@@ -46,14 +46,21 @@ jobs:
         run: |
           echo "TAG=${GITHUB_REF#refs/tags/plumbing-airflow-}" >> $GITHUB_OUTPUT
 
+      # Add dependencies required for multi-platform docker builds
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: ./src
           file: ./src/plumbing_airflow/Dockerfile
           push: true
-          # linux/amd64 would also be the default as a linux runner is building the image. This is just to be explicit.
-          platforms: linux/amd64
+          # Multi-platform build
+          platforms: linux/amd64,linux/arm64
           build-args: |
             CI_COMMIT_HASH=${{ github.sha }}
           tags: |
