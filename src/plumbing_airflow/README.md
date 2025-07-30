@@ -330,6 +330,9 @@ gh auth token | docker login ghcr.io -u jonathanschwarzhaupt --password-stdin
 # Build and push ARM64 image
 docker build --platform linux/arm64 -t ghcr.io/jonathanschwarzhaupt/plumbing-airflow:v0.3.1-arm64 -f Dockerfile ../
 docker push ghcr.io/jonathanschwarzhaupt/plumbing-airflow:v0.3.1-arm64
+
+# If the push fails, refresh the gh token with packages:write permissions and repeat the steps above
+gh auth refresh -s write:packages
 ```
 
 **Local AMD64 build (Ubuntu desktop):**
