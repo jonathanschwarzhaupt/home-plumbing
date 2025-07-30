@@ -31,7 +31,7 @@ This DAG performs comprehensive data extraction from Comdirect banking API:
 ## Requirements
 
 - Valid access token in Airflow Variable `comdirect_access_token`
-- Environment variables: `COMDIRECT__TURSO_PATH`, `TURSO_SYNC_URL`, `TURSO_AUTH_TOKEN`
+- Environment variables: `COMDIRECT__TURSO_PATH`, `TURSO_SYNC_URL`, and `TURSO_AUTH_TOKEN`
 - Turso account for embedded sqlite replicas that sync to their remote
 
 ## Data Flow
