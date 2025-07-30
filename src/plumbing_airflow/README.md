@@ -313,3 +313,40 @@ DAGs leverage the modular `plumbing_core` library:
 - **Logging**: Consistent logging across core and orchestration layers
 
 This separation allows the same data logic to be used in different orchestration contexts (Airflow, Prefect, standalone scripts, etc.).
+
+## Developer Notes
+
+### Multi-Platform Docker Builds
+
+GitHub Actions multi-platform builds (linux/amd64,linux/arm64) can be extremely slow due to ARM64 emulation overhead on x86_64 runners. For faster development iteration, you can build and push architecture-specific images locally.
+
+**Local ARM64 build (M1 MacBook):**
+```bash
+cd src/plumbing_airflow
+
+# Login to GitHub Container Registry
+gh auth token | docker login ghcr.io -u jonathanschwarzhaupt --password-stdin
+
+# Build and push ARM64 image
+docker build --platform linux/arm64 -t ghcr.io/jonathanschwarzhaupt/plumbing-airflow:v0.3.1-arm64 -f Dockerfile ../
+docker push ghcr.io/jonathanschwarzhaupt/plumbing-airflow:v0.3.1-arm64
+```
+
+**Local AMD64 build (Ubuntu desktop):**
+```bash
+# Build and push AMD64 image
+docker build --platform linux/amd64 -t ghcr.io/jonathanschwarzhaupt/plumbing-airflow:v0.3.1-amd64 -f Dockerfile ../
+docker push ghcr.io/jonathanschwarzhaupt/plumbing-airflow:v0.3.1-amd64
+```
+
+**Optional: Create multi-arch manifest:**
+```bash
+# Create manifest list pointing to both images
+docker manifest create ghcr.io/jonathanschwarzhaupt/plumbing-airflow:v0.3.1 \
+  ghcr.io/jonathanschwarzhaupt/plumbing-airflow:v0.3.1-amd64 \
+  ghcr.io/jonathanschwarzhaupt/plumbing-airflow:v0.3.1-arm64
+
+docker manifest push ghcr.io/jonathanschwarzhaupt/plumbing-airflow:v0.3.1
+```
+
+This approach provides native-speed builds on each platform and allows proper testing on M1 Macs with ARM64 images while maintaining AMD64 support for production deployments.
