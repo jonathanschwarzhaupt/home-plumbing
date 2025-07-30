@@ -1,6 +1,6 @@
 [project]
 name = "plumbing-airflow"
-version = "0.3.0"
+version = "0.3.1"
 description = "Plumbing Airflow - plumbing things together in an orchestrated manner"
 readme = "README.md"
 authors = [{ name = "Jonathan Schwarzhaupt", email = "jonathan@example.com" }]
