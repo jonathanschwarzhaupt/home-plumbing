@@ -5,7 +5,10 @@ description = "Plumbing Airflow - plumbing things together in an orchestrated ma
 readme = "README.md"
 authors = [{ name = "Jonathan Schwarzhaupt", email = "jonathan@example.com" }]
 requires-python = ">=3.12"
-dependencies = ["numpy>=2.3.1", "pandas>=2.3.1", "plumbing-core"]
+dependencies = [
+ "logfire[httpx]>=4.3.3",
+ "plumbing-core",
+]
 
 [dependency-groups]
 dev = ["apache-airflow>=3.0.3", "ruff>=0.12.3"]
