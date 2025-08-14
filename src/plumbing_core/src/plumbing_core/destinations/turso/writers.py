@@ -39,7 +39,7 @@ def _ensure_table_exists(
             # Drop staging table if exists, then create new one
             conn.execute(f"DROP TABLE IF EXISTS main.{table_name}")
             create_table_str = f"CREATE TABLE main.{table_name}"
-            logger.info(f"Dropped and creating staging table {table_name}")
+            logger.info(f"Dropped staging table {table_name}")
         else:
             create_table_str = f"CREATE TABLE IF NOT EXISTS main.{table_name}"
             logger.info(f"Creating new table {table_name}")
@@ -363,7 +363,7 @@ def write_account_transactions_categorized(
     categorized_transactions: List[CategorizedBankTransaction],
     config: TursoConfig,
     ddl: str,
-    table_name: str = "account_transactions_categorized",
+    table_name: str = "account_transactions__categorized",
     delete_keys: List[str] = ["account_id", "reference"],
 ) -> int:
     if not categorized_transactions:

@@ -3,3 +3,4 @@ comdirect_turso.*
 .env
 .env.comdirect
 .env.turso
+.env.pydanticai

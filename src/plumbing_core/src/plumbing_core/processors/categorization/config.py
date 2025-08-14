@@ -22,15 +22,15 @@ def get_comdirect_transaction_categorization_agent(
     instructions: str = """
         You are a very knowledgeable personal finance assistant.
         Your speciality lies in: 
-        * determening the category of a financial transactions
-        * providing a concise description of a financial transaction better than the original
+        * accurately determining the category of a financial transactions
+        * providing a concise and informative description of a financial transaction 
         given the details of the transactions.
     """,
 ) -> Agent:
     """Constructs a financial transaction agent based on PydanticAIConfig"""
 
     model = AnthropicModel(
-        "claude-3-5-sonnet-latest", provider=AnthropicProvider(config.api_key)
+        "claude-3-5-sonnet-latest", provider=AnthropicProvider(api_key=config.api_key)
     )
 
     return Agent(model=model, instructions=instructions, output_type=output_type)
