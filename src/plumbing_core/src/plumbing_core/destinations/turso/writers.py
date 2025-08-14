@@ -1,7 +1,9 @@
 import logging
 from typing import List
 
+from pydantic import BaseModel
 
+from plumbing_core.processors.categorization.types import CategorizedBankTransaction
 from plumbing_core.sources.comdirect import (
     AccountBalance,
     AccountTransaction,
@@ -37,7 +39,7 @@ def _ensure_table_exists(
             # Drop staging table if exists, then create new one
             conn.execute(f"DROP TABLE IF EXISTS main.{table_name}")
             create_table_str = f"CREATE TABLE main.{table_name}"
-            logger.info(f"Dropped and creating staging table {table_name}")
+            logger.info(f"Dropped staging table {table_name}")
         else:
             create_table_str = f"CREATE TABLE IF NOT EXISTS main.{table_name}"
             logger.info(f"Creating new table {table_name}")
@@ -58,7 +60,7 @@ def _ensure_table_exists(
 
 def _delete_and_insert(
     conn,
-    data: List[AccountBalance] | List[AccountTransaction],
+    data: List[BaseModel],
     table_name: str,
     delete_keys: List[str],
     ddl: str,
@@ -345,7 +347,45 @@ def write_account_transactions_not_booked(
                 ddl=ddl,
             )
 
-            logger.info(f"Transaction commited: {inserted_count} records processesed")
+            logger.info(f"Transaction committed: {inserted_count} records processesed")
+            if is_embedded_replica(config):
+                conn.sync()
+
+            return inserted_count
+
+        except Exception as e:
+            conn.rollback()
+            logger.error(f"Transaction rolled back due to error: {e}")
+            raise
+
+
+def write_account_transactions_categorized(
+    categorized_transactions: List[CategorizedBankTransaction],
+    config: TursoConfig,
+    ddl: str,
+    table_name: str = "account_transactions__categorized",
+    delete_keys: List[str] = ["account_id", "reference"],
+) -> int:
+    if not categorized_transactions:
+        logger.info("No categorized transactions passed, returning")
+        return 0
+
+    with get_turso_connection(config) as conn:
+        try:
+            if is_embedded_replica(config):
+                conn.sync()
+
+            _ensure_table_exists(conn=conn, table_name=table_name, ddl=ddl)
+
+            inserted_count = _delete_and_insert(
+                conn=conn,
+                data=categorized_transactions,
+                table_name=table_name,
+                delete_keys=delete_keys,
+                ddl=ddl,
+            )
+            logger.info(f"Transaction committed: {inserted_count} records processesed")
+
             if is_embedded_replica(config):
                 conn.sync()
 
