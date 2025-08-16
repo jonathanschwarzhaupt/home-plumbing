@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.3](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.3.2...plumbing-airflow-v0.3.3) (2025-08-16)
+
+
+### Documentation
+
+* update manual docker push help commands ([b2fb1fe](https://github.com/jonathanschwarzhaupt/home-plumbing/commit/b2fb1fecd0e1d5682470ef30ec2327be75e1f025))
+
 ## [0.3.2](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.3.1...plumbing-airflow-v0.3.2) (2025-07-30)
 
 
