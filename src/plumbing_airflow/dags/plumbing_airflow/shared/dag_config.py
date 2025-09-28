@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Dict, Any, Literal
 from pendulum import datetime, Date
 
-from airflow.sdk import task, Variable
+from airflow.sdk import task, Variable, Asset
 from plumbing_core.destinations.turso import TursoConfig
 from plumbing_core.sources.comdirect import APIConfig, AccessToken
 from plumbing_core.destinations.sqlite import SQLiteConfig
@@ -16,6 +16,9 @@ from plumbing_core.destinations.sqlite import SQLiteConfig
 DEFAULT_START_DATE = datetime(2025, 4, 1)
 COMDIRECT_ACCESS_TOKEN_KEY = "comdirect_access_token"
 DEFAULT_TRANSACTION_DATE = Date(2025, 1, 1)
+TRANSACTION_ASSET = Asset(
+    "comdirect_transactions__booked", extra={"source": "comdirect"}
+)
 
 
 def get_default_dag_args() -> Dict[str, Any]:
@@ -28,6 +31,7 @@ def get_default_dag_args() -> Dict[str, Any]:
         "default_args": {
             "owner": "Jonathan",
         },
+        "max_consecutive_failed_dag_runs": 5,
         "doc_md": caller_module.__doc__
         if caller_module and caller_module.__doc__
         else None,

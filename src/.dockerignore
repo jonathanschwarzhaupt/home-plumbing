@@ -1,0 +1,72 @@
+# Logs - exclude all Airflow logs (large files)
+plumbing_airflow/logs/
+**/logs/
+*.log
+
+# Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Testing
+.pytest_cache/
+.tox/
+.coverage
+htmlcov/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# Development tools and IDEs
+.claude/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# Documentation and examples (not needed in runtime)
+plumbing_core/examples/
+*.md
+README*
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Project specific
+.ropeproject/
+mise.toml
+.mise.toml
+
+# Keep only essential directories:
+# plumbing_core/ (source code needed)
+# plumbing_airflow/dags/ (DAGs needed)
+# plumbing_airflow/requirements.txt (dependencies)
+# plumbing_airflow/Dockerfile (this file)

@@ -8,10 +8,11 @@ requires-python = ">=3.12"
 dependencies = [
  "logfire[httpx]>=4.3.3",
  "plumbing-core",
+ "apache-airflow[celery,fab,postgres,redis]==3.1.0",
 ]
 
 [dependency-groups]
-dev = ["apache-airflow>=3.0.3", "ruff>=0.12.3"]
+dev = ["ruff>=0.12.3"]
 
 [tool.uv.sources]
 plumbing-core = { path = "../plumbing_core" }

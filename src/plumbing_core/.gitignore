@@ -1,5 +1,6 @@
 comdirect.db
 comdirect_turso.*
+.claude
 .env
 .env.comdirect
 .env.turso
