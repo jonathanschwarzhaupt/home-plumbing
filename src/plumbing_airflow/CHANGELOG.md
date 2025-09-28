@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.3.3...plumbing-airflow-v0.4.0) (2025-09-28)
+
+
+### Features
+
+* asset aware scheduling ([#27](https://github.com/jonathanschwarzhaupt/home-plumbing/issues/27)) ([597c4b0](https://github.com/jonathanschwarzhaupt/home-plumbing/commit/597c4b0714226ec038a7542d640ec0c6ae923643))
+
 ## [0.3.3](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/plumbing-airflow-v0.3.2...plumbing-airflow-v0.3.3) (2025-08-16)
 
 
