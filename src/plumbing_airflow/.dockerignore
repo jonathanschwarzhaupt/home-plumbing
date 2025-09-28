@@ -1,0 +1,106 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Docker
+.dockerignore
+Dockerfile*
+docker-compose*
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+.coverage
+.pytest_cache/
+.tox/
+
+# Documentation
+*.md
+docs/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Local development files
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Database files
+*.sqlite
+*.db
+database/
+
+# Temporary and cache directories
+tmp/
+temp/
+.tmp/
+.temp/
+.cache/
+
+# Build artifacts
+.mypy_cache/
+.ruff_cache/
+
+# Additional Python cache
+share/python-wheels/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# Claude Code
+.claude/
+CLAUDE.md

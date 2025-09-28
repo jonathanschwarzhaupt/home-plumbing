@@ -41,7 +41,7 @@ This DAG performs comprehensive data extraction from Comdirect banking API:
 3. **Pending Transactions**: Refreshes all pending transactions across accounts
 """
 
-from airflow.sdk import dag, task
+from airflow.sdk import dag, task, Metadata
 
 from plumbing_core.sources.comdirect import (
     AccountBalance,
@@ -65,6 +65,7 @@ from plumbing_airflow.shared.dag_config import (
     get_auth_token,
     create_access_token,
     DEFAULT_TRANSACTION_DATE,
+    TRANSACTION_ASSET,
 )
 
 import logging
@@ -100,7 +101,7 @@ def comdirect_data():
 
         return [account.account_id for account in account_balances]
 
-    @task
+    @task(outlets=[TRANSACTION_ASSET])
     def get_account_transactions_data_booked(
         access_token_json: Dict[str, Any], account_ids: List[str]
     ) -> None:
@@ -110,6 +111,7 @@ def comdirect_data():
         cfg = get_api_config(use_env_file=True)
         db_config: TursoConfig = get_database_config(db_type="turso")
         table_name = "account_transactions__booked"
+        counts = list()  # holds the counts of records loaded for each account
 
         for account_id in account_ids:
             # Set default from when to fetch transactions
@@ -144,8 +146,10 @@ def comdirect_data():
                 ddl=COMDIRECT_SCHEMAS[table_name],
             )
             logging.info(f"Loaded {record_count} records to booked transactions table")
+            counts.append(record_count)
 
         logging.info("All done")
+        yield Metadata(asset=TRANSACTION_ASSET, extra={"row_count": sum(counts)})
 
     @task
     def get_account_transactions_data_not_booked(

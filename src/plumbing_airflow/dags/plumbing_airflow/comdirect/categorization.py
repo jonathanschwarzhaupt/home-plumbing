@@ -20,22 +20,42 @@ from plumbing_core.destinations.turso import (
     write_account_transactions_categorized,
 )
 from plumbing_airflow.shared.dag_config import (
+    TRANSACTION_ASSET,
     get_default_dag_args,
     get_comdirect_tags,
     get_database_config,
 )
 
 
-@dag(schedule=None, tags=get_comdirect_tags("data"), **get_default_dag_args())
+@dag(
+    schedule=TRANSACTION_ASSET,
+    tags=get_comdirect_tags("data"),
+    **get_default_dag_args(),
+)
 def comdirect_categorization():
-    """Regularly fetches and inserts comdirect account balance and account transaction data into db"""
+    """Fetches and inserts comdirect account balance and account transaction data into db"""
 
-    @task
-    def categorize_transactions() -> None:
+    @task(inlets=[TRANSACTION_ASSET])
+    def categorize(inlet_events):
+        # Get the asset's events from context
+        asset_events = inlet_events[TRANSACTION_ASSET]
+        if len(asset_events) == 0:
+            print(f"No asset_events for {TRANSACTION_ASSET.uri}")
+
+        last_row_count = asset_events[-1].extra["row_count"]
+        if last_row_count == 0:
+            raise AirflowSkipException("No new transactions to categorize")
+
+        logging.info(
+            f"Received asset event to categorize {last_row_count} transactions"
+        )
+
         # Get data step
         db_config = get_database_config(db_type="turso")
         transactions = get_transactions_to_categorize(config=db_config)
+        # well, just to be sure
         if not transactions:
+            logging.info("No transactions to categorize")
             raise AirflowSkipException
 
         ai_config = PydanticAIConfig()
@@ -72,7 +92,7 @@ def comdirect_categorization():
         )
         logging.info(f"Inserted {inserted_count} records")
 
-    categorize_transactions()
+    categorize()
 
 
 comdirect_categorization()
