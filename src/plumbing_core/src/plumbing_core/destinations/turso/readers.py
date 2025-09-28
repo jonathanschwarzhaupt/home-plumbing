@@ -57,7 +57,7 @@ def get_transactions_to_categorize(
     config: TursoConfig,
     source_table_name: str = "account_transactions__booked",
     categorization_table_name: str = "account_transactions__categorized",
-    limit: Optional[int] = 10,
+    limit: Optional[int] = 100,
 ) -> Optional[list[Dict[str, Any]]]:
     """Gets the max date (string) from table name"""
 
