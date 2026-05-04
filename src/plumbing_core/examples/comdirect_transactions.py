@@ -44,12 +44,12 @@ def main() -> None:
             cfg=cfg,
             account_id=account_id,
             bearer_access_token=access_token.bearer_access_token,
-            last_transaction_date=Date(2025, 5, 1),
+            last_transaction_date=Date(2026, 1, 1),
             transaction_state="BOOKED",
         )
 
         logging.info("Loading to turso sqlite")
-        db_path = Path.cwd() / "comdirect_turso.db"
+        db_path = Path.cwd() / "comdirect.db"
         db_config = TursoConfig(db_path=db_path)
         record_count = write_account_transactions_booked(
             transactions=transactions,

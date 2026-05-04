@@ -33,7 +33,7 @@ def main() -> None:
     )
 
     logging.info("Loading to Turso sqlite")
-    db_path = Path.cwd() / "comdirect_turso.db"
+    db_path = Path.cwd() / "comdirect.db"
 
     # Local only:
     # db_config = TursoConfig(db_path=db_path)
