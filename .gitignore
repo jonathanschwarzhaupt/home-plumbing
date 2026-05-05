@@ -1,6 +1,7 @@
 .idea/
 **/.DS_STORE
 **/*.csv
+**/*.claude/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

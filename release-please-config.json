@@ -1,18 +1,32 @@
 {
-  "packages": {
-    "src/plumbing_airflow": {
-      "release-type": "python",
-      "package-name": "plumbing-airflow",
-      "component": "plumbing-airflow",
-      "include-component-in-tag": true,
-      "changelog-path": "CHANGELOG.md",
-      "extra-files": [
-        {
-          "type": "toml",
-          "path": "uv.lock",
-          "jsonpath": "$.package[?(@.name.value=='plumbing-airflow')].version"
+    "packages": {
+        "src/plumbing_airflow": {
+            "release-type": "python",
+            "package-name": "plumbing-airflow",
+            "component": "plumbing-airflow",
+            "include-component-in-tag": true,
+            "changelog-path": "CHANGELOG.md",
+            "extra-files": [
+                {
+                    "type": "toml",
+                    "path": "uv.lock",
+                    "jsonpath": "$.package[?(@.name.value=='plumbing-airflow')].version"
+                }
+            ]
+        },
+        "src/comdirect-auth": {
+            "release-type": "python",
+            "package-name": "comdirect-auth",
+            "component": "comdirect-auth",
+            "include-component-in-tag": true,
+            "changelog-path": "CHANGELOG.md",
+            "extra-files": [
+                {
+                    "type": "toml",
+                    "path": "uv.lock",
+                    "jsonpath": "$.package[?(@.name.value=='comdirect-auth')].version"
+                }
+            ]
         }
-      ]
     }
-  }
 }
