@@ -1,0 +1,23 @@
+[project]
+name = "comdirect-auth"
+version = "0.0.0"
+description = "Containerized script to fetch, refresh comdirect oauth token and save to 1password"
+readme = "README.md"
+authors = [
+    { name = "jonathanschwarzhaupt", email = "jonathan.schwarzhaupt@gmail.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+ "plumbing-core",
+ "onepassword-sdk>=0.4.0",
+]
+
+[project.scripts]
+comdirect-auth = "comdirect_auth.main:run"
+
+[tool.uv.sources]
+plumbing-core = { path = "../plumbing_core" }
+
+[build-system]
+requires = ["uv_build>=0.11.8,<0.12.0"]
+build-backend = "uv_build"
