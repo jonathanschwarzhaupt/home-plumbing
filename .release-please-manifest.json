@@ -1,4 +1,4 @@
 {
   "src/plumbing_airflow": "0.4.0",
-  "src/comdirect-auth": "0.1.0"
+  "src/comdirect-auth": "0.1.1"
 }
