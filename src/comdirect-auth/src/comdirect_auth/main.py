@@ -1,11 +1,8 @@
-import asyncio
 import json
 import logging
 import os
-from typing import Any, Dict
 
-from onepassword import ItemCategory, ItemCreateParams, ItemField, ItemFieldType
-from onepassword.client import Client
+from cryptography.fernet import Fernet
 from plumbing_core.sources.comdirect import (
     AccessToken,
     APIConfig,
@@ -15,48 +12,20 @@ from plumbing_core.sources.comdirect import (
 )
 
 OP_ITEM_NAME = "comdirect-token"
+UTF8 = "utf-8"
 
 
-async def create_op_item(client, vault_id: str, value: Dict[str, Any] | None) -> str:
-    """Creates a 1password item"""
-    if not value:
-        raise ValueError("value is None.")
-
-    to_create = ItemCreateParams(
-        title=OP_ITEM_NAME,
-        category=ItemCategory.LOGIN,
-        vaultId=vault_id,
-        fields=[
-            ItemField(
-                id="password",
-                title="password",
-                fieldType=ItemFieldType.CONCEALED,
-                value=json.dumps(value),
-            ),
-        ],
-    )
-    created_item = await client.items.create(to_create)
-    logging.info(f"Created item '{created_item.title}' ({created_item.id})")
-    return created_item.id
+def load_token(file_path: str, fernet_key: Fernet) -> dict:
+    with open(file_path, "rb") as f:
+        encrypted = f.read()
+    decrypted = fernet_key.decrypt(encrypted)
+    return json.loads(decrypted.decode(UTF8))
 
 
-async def update_op_item(
-    client, vault_id: str, item_id: str, value: Dict[str, Any]
-) -> None:
-    """Updates a 1password item"""
-    item = await client.items.get(vault_id, item_id)
-
-    item.fields[0].value = json.dumps(value)
-    updated_item = await client.items.put(item)
-    logging.info(f"Updated item: {updated_item.title} ({updated_item.id})")
-
-
-async def find_item_id(client, vault_id: str, title: str) -> str | None:
-    items = await client.items.list(vault_id)
-    for item in items:
-        if item.title == title:
-            return item.id
-    return None
+def safe_token(file_path: str, fernet_key: Fernet, token: dict) -> None:
+    encrypted = fernet_key.encrypt(json.dumps(token).encode(UTF8))
+    with open(file_path, "wb") as f:
+        f.write(encrypted)
 
 
 def _require_env(name: str) -> str:
@@ -66,7 +35,7 @@ def _require_env(name: str) -> str:
     return value
 
 
-async def main() -> None:
+def main() -> None:
     """Main entry point"""
     logging.basicConfig(
         level=logging.INFO,
@@ -75,17 +44,14 @@ async def main() -> None:
     )
 
     # If token not exist in 1password, copmlete comdirect oauth flow
-    token = _require_env("OP_SERVICE_ACCOUNT_TOKEN")
-    vault_id = _require_env("OP_VAULT_ID")
+    FERNET_KEY = Fernet(_require_env("FERNET_KEY"))
+    TOKEN_FILE_PATH = _require_env("TOKEN_FILE_PATH")
 
-    client = await Client.authenticate(
-        auth=token, integration_name="Home Plumbing", integration_version="v1.0.0"
-    )
+    # parses comdirect required env vars
     cfg = APIConfig()
 
     try:
-        raw = await client.secrets.resolve(f"op://apps/{OP_ITEM_NAME}/password")
-        token = AccessToken(**json.loads(raw))
+        token = AccessToken(**load_token(TOKEN_FILE_PATH, FERNET_KEY))
     except Exception:
         logging.info("Token not found. Entering comdirect oauth flow.")
         session_id = get_session_id()
@@ -93,7 +59,8 @@ async def main() -> None:
         if not token:
             raise RuntimeError("OAuth flow completed but returned no token.")
 
-        await create_op_item(client, vault_id, token.to_dict())
+        # await create_op_item(client, vault_id, token.to_dict())
+        safe_token(TOKEN_FILE_PATH, FERNET_KEY, token.to_dict())
         logging.info("Saved oauth credentials from comdirect, returning.")
         return
 
@@ -105,12 +72,7 @@ async def main() -> None:
             raise RuntimeError("Token refresh returned None")
 
         logging.info(f"Token refreshed. Now expires at: {new_token.expires_at}")
-        item_id = await find_item_id(client, vault_id, OP_ITEM_NAME)
-        if not item_id:
-            raise ValueError(
-                f"Could not find the ID of item in vault '{vault_id}' with title '{OP_ITEM_NAME}'"
-            )
-        await update_op_item(client, vault_id, item_id, new_token.to_dict())
+        safe_token(TOKEN_FILE_PATH, FERNET_KEY, token.to_dict())
         return
 
     logging.info(f"Token does not need to be refreshed until {token.expires_at}")
@@ -118,8 +80,8 @@ async def main() -> None:
 
 
 def run() -> None:
-    asyncio.run(main())
+    main()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
