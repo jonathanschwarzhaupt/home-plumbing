@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/comdirect-auth-v0.1.1...comdirect-auth-v0.1.2) (2026-05-07)
+
+
+### Bug Fixes
+
+* bug in saving new token after refresh & buffer seconds ([#33](https://github.com/jonathanschwarzhaupt/home-plumbing/issues/33)) ([69addc3](https://github.com/jonathanschwarzhaupt/home-plumbing/commit/69addc33e284b8ce3cb5603b3aa1f7751c0752a1))
+
 ## [0.1.1](https://github.com/jonathanschwarzhaupt/home-plumbing/compare/comdirect-auth-v0.1.0...comdirect-auth-v0.1.1) (2026-05-06)
 
 
