@@ -1,6 +1,6 @@
 [project]
 name = "comdirect-auth"
-version = "0.1.0"
+version = "0.1.1"
 description = "Containerized script to fetch, refresh comdirect oauth token and save to 1password"
 readme = "README.md"
 authors = [
