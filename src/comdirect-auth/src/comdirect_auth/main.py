@@ -65,14 +65,14 @@ def main() -> None:
         return
 
     logging.info("Token found. Checking if needs refresh.")
-    if token.needs_refresh():
+    if token.needs_refresh(buffer_seconds=240):
         logging.info("Token needs to be refreshed")
         new_token = refresh_token(cfg=cfg, token=token)
         if not new_token:
             raise RuntimeError("Token refresh returned None")
 
         logging.info(f"Token refreshed. Now expires at: {new_token.expires_at}")
-        safe_token(TOKEN_FILE_PATH, FERNET_KEY, token.to_dict())
+        safe_token(TOKEN_FILE_PATH, FERNET_KEY, new_token.to_dict())
         return
 
     logging.info(f"Token does not need to be refreshed until {token.expires_at}")
